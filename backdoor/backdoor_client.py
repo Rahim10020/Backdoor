@@ -34,6 +34,10 @@ while True:
         reponse = " "
     
     print("longueur de la reponse: ", len(reponse))
+    # on va envoyer la reponse sur 13 octets -> longueur de la reponse = 13 octets
+    header = str(len(reponse.encode())).zfill(13)
+    print("longueur du header: ",header)
+    s.sendall(header.encode())
     s.sendall(reponse.encode()) # envoie sous forme binaire
     
 s.close()
