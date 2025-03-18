@@ -13,7 +13,7 @@ while True:
         try:
             os.chdir(commande_split[1])
         except FileNotFoundError:
-            print("repertoire invalide")
+            print("ERREUR: repertoire invalide...")
     else:
         resultat = subprocess.run(commande, shell=True, capture_output=True, universal_newlines=True)
         print(resultat.stdout)
