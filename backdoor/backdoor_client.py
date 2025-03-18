@@ -32,6 +32,8 @@ while True:
     
     if not reponse or len(reponse) == 0:    # pour gerer cd qui ne renvoie aucune reponse
         reponse = " "
+    
+    print("longueur de la reponse: ", len(reponse))
     s.sendall(reponse.encode()) # envoie sous forme binaire
     
 s.close()

@@ -16,6 +16,8 @@ print(f"Connexion etablie avec {client_address}")
 
 while True:
     commande = input("Commande: ")
+    if commande == "":
+        continue
     connection_socket.sendall(commande.encode())
     data_recues = connection_socket.recv(MAX_DATA_SIZE)
     if not data_recues:
