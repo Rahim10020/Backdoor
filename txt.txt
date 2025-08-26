@@ -1,0 +1,131 @@
+# Documentation du Projet - Terminal et Communication Réseau
+
+## Vue d'ensemble du projet
+
+Ce projet est composé de plusieurs modules Python qui explorent la programmation réseau, l'exécution de commandes système et la communication client-serveur. Il comprend un terminal local, un système de chat via sockets et un système de contrôle à distance.
+
+## Architecture du projet
+
+### 1. Terminal local (`terminal.py`)
+**Fonctionnalité :** Émulation d'un terminal en Python
+- Permet l'exécution de commandes système en local
+- Gère spécialement la commande `cd` pour naviguer dans les répertoires
+- Affiche le répertoire courant dans le prompt
+- Commande `exit` pour quitter
+
+**Fonctionnement technique :**
+- Utilise `subprocess.run()` pour exécuter les commandes
+- Capture stdout et stderr séparément
+- Gestion d'erreur pour les répertoires invalides
+
+### 2. Système de chat simple (`sockets/`)
+**Composants :**
+- `socket_serveur.py` : Serveur de chat basique
+- `socket_client.py` : Client de chat avec reconnexion automatique
+
+**Fonctionnalités :**
+- Communication bidirectionnelle en temps réel
+- Reconnexion automatique côté client en cas de perte de connexion
+- Interface simple avec prompt utilisateur
+
+### 3. Système de contrôle à distance (`backdoor/`)
+**Composants :**
+- `backdoor_serveur.py` : Serveur de contrôle avec interface de commandes
+- `backdoor_client.py` : Client qui exécute les commandes reçues
+
+## Fonctionnalités détaillées
+
+### Backdoor Client (`backdoor_client.py`)
+**Capacités :**
+- Connexion automatique au serveur avec retry
+- Exécution de commandes système reçues du serveur
+- Commande spéciale `infos` : retourne plateforme + répertoire courant
+- Gestion spéciale de la commande `cd`
+- Envoi de réponses avec protocole de taille dynamique
+
+**Protocol de communication :**
+- Header de 13 octets contenant la taille des données
+- Envoi des données en chunks pour gérer les gros volumes
+- Encodage/décodage UTF-8
+
+### Backdoor Serveur (`backdoor_serveur.py`)
+**Capacités :**
+- Écoute des connexions entrantes
+- Interface interactive pour saisir des commandes
+- Affichage des informations client dans le prompt
+- Gestion robuste de la réception de données volumineuses
+- Fonction `socket_receive_all_data()` pour recevoir des données de taille arbitraire
+
+## Configuration réseau
+
+**Paramètres par défaut :**
+- Host : `127.0.0.1` (localhost)
+- Port : `32000`
+- Taille max des chunks : `1024` octets
+
+## Points techniques remarquables
+
+### Gestion de la reconnexion
+- Le client tente de se reconnecter toutes les 4 secondes en cas d'échec
+- Boucle infinie avec gestion d'exception `ConnectionRefusedError`
+
+### Protocole de communication avancé
+- Envoi de la taille des données avant les données elles-mêmes
+- Permet de gérer des réponses de taille variable
+- Évite les problèmes de troncature des gros messages
+
+### Exécution de commandes
+- Utilisation de `subprocess.run()` avec `shell=True`
+- Capture des sorties standard et d'erreur
+- Gestion spéciale pour les commandes sans sortie
+
+## Cas d'usage
+
+1. **Apprentissage de la programmation réseau**
+   - Compréhension des sockets TCP
+   - Gestion des protocoles de communication
+   - Handling des erreurs réseau
+
+2. **Administration système à distance**
+   - Exécution de commandes sur machines distantes
+   - Monitoring et diagnostic
+   - Automatisation de tâches
+
+3. **Outils de développement**
+   - Debug d'applications distribuées
+   - Tests de connectivité
+   - Prototypage rapide d'outils réseau
+
+## Structure des fichiers
+
+```
+projet/
+├── backdoor/
+│   ├── backdoor_client.py    # Client de contrôle à distance
+│   └── backdoor_serveur.py   # Serveur de contrôle
+├── sockets/
+│   ├── socket_client.py      # Client de chat simple
+│   └── socket_serveur.py     # Serveur de chat simple
+└── terminal.py               # Terminal local Python
+```
+
+## Considérations de sécurité
+
+⚠️ **Important :** Ce code doit être utilisé uniquement dans un environnement contrôlé et à des fins éducatives ou d'administration légitimes. L'exécution de commandes à distance présente des risques de sécurité importants.
+
+**Recommandations :**
+- Ne jamais exposer sur Internet sans protection
+- Utiliser uniquement sur réseaux privés de confiance  
+- Implémenter une authentification avant utilisation en production
+- Ajouter du chiffrement pour les communications sensibles
+- Logger toutes les actions pour l'audit
+
+## Évolutions possibles
+
+- Interface graphique pour faciliter l'utilisation
+- Authentification utilisateur
+- Chiffrement des communications (TLS/SSL)
+- Support de connexions multiples simultanées
+- Transfert de fichiers
+- Commandes de monitoring système avancées
+- Système de permissions et de restrictions de commandes
